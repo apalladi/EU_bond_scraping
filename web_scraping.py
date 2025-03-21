@@ -3,9 +3,10 @@ import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from datetime import datetime
 import json
+import time
 import concurrent.futures
+from datetime import datetime
 from tqdm import tqdm
 from bs4 import BeautifulSoup
 
@@ -222,13 +223,9 @@ def extract_multiple_ISIN(list_ISIN):
             df[name] = df[name].astype(float)
 
     df2 = compute_ratings_volume_new(df)
+    df2.sort_values("median_monthly_volume_million", ascending=False, inplace=True)
 
     return df2
-
-
-import concurrent.futures
-import time
-from tqdm import tqdm
 
 
 def extract_multiple_ISIN_parallel(list_ISIN):
