@@ -30,6 +30,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install papermill  # Installa papermill per eseguire il notebook
+          python -m ipykernel.install  # Installa il kernel Python per Jupyter
 
       - name: Eseguire lo script di web scraping
         run: |
