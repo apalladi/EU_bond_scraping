@@ -2,7 +2,7 @@ name: Esegui script ogni giorno lavorativo alle 15:40 ora locale (CEST)
 
 on:
   schedule:
-    - cron: '40 13 * * 1-5'  # Ogni giorno lavorativo alle 13:40 UTC (che è 15:40 CEST)
+    - cron: '50 14 * * 1-5'  # Ogni giorno lavorativo alle 14:50 UTC (che è 15:40 CEST)
   workflow_dispatch:  # Permette di eseguire il workflow manualmente tramite l'interfaccia GitHub
 
 jobs:
