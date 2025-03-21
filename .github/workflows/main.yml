@@ -29,15 +29,10 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install papermill ipykernel  # Aggiungi ipykernel per il kernel di Jupyter
 
       - name: Eseguire lo script di web scraping
         run: |
           python3 web_scraping.py  # Esegui il tuo script di scraping
-
-      - name: Eseguire il notebook con papermill
-        run: |
-          papermill data-analysis.ipynb data-analysis.ipynb  # Sovrascrivi il notebook
 
       - name: Configurare Git
         run: |
@@ -46,9 +41,8 @@ jobs:
 
       - name: Aggiungere e committare modifiche
         run: |
-          git add data-analysis.ipynb  # Aggiungi il notebook modificato
           git add results/bond_info_extracted.csv  # Aggiungi anche i dati estratti dallo scraping
-          git commit -m "Aggiornamento automatico del notebook e dei dati" || echo "Nessuna modifica da commettere"
+          git commit -m "Aggiornamento automatico dei dati" || echo "Nessuna modifica da commettere"
 
       - name: Push delle modifiche via SSH
         run: |
