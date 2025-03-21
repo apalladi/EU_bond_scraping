@@ -1,8 +1,8 @@
-name: Esegui script ogni giorno lavorativo alle 15:40 ora locale (CEST)
+name: Esegui script ogni giorno lavorativo alle 16:15 ora locale 
 
 on:
   schedule:
-    - cron: '50 14 * * 1-5'  # Ogni giorno lavorativo alle 14:50 UTC (che è 15:40 CEST)
+    - cron: '15 15 * * 1-5'  # Ogni giorno lavorativo alle 15:15 UTC (che è 16:15 CEST)
   workflow_dispatch:  # Permette di eseguire il workflow manualmente tramite l'interfaccia GitHub
 
 jobs:
@@ -25,4 +25,4 @@ jobs:
 
       - name: Esegui script
         run: |
-          python3 path/to/your/script.py  # Sostituisci con il comando per eseguire il tuo script
+          python3 web_scraping.py  # Sostituisci con il comando per eseguire il tuo script
