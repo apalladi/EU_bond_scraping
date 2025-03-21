@@ -2,8 +2,8 @@ name: Esegui script ogni giorno lavorativo alle 16:15 ora locale
 
 on:
   schedule:
-    - cron: '15 15 * * 1-5'  # Ogni giorno lavorativo alle 15:15 UTC (che è 16:15 CEST)
-  workflow_dispatch:  # Permette di eseguire il workflow manualmente tramite l'interfaccia GitHub
+    - cron: '15 15 * * 1-5'  # Ogni giorno lavorativo alle 15:15 UTC (16:15 ora italiana)
+  workflow_dispatch:  # Permette esecuzione manuale
 
 jobs:
   run-script:
@@ -13,40 +13,37 @@ jobs:
       - name: Checkout codice
         uses: actions/checkout@v2
 
+      - name: Impostare SSH per GitHub
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
       - name: Impostare Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.x'  # Imposta la versione di Python se necessario
+          python-version: '3.x'
 
       - name: Installare dipendenze
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt  # Installa le dipendenze dal file requirements.txt
+          pip install -r requirements.txt
 
-      - name: Esegui script
+      - name: Eseguire lo script
         run: |
-          python3 web_scraping.py  # Sostituisci con il comando per eseguire il tuo script
+          python3 web_scraping.py  # Sostituiscilo con il nome del tuo script
 
-      - name: Configurazione SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/github-actions-key
-          chmod 600 ~/.ssh/github-actions-key
-          ssh-keyscan github.com >> ~/.ssh/known_hosts
-
-      - name: Configura l'utente Git
+      - name: Configurare Git
         run: |
           git config --global user.name "apalladi"
           git config --global user.email "andrea.palladino@outlook.it"
 
-      - name: Aggiungi le modifiche al commit
+      - name: Aggiungere e committare modifiche
         run: |
-          git add results/bond_info_extracted.csv  # Aggiunge tutte le modifiche al commit
-
-      - name: Esegui il commit
-        run: |
+          git add results/bond_info_extracted.csv
           git commit -m "Aggiornamento automatico dopo esecuzione script" || echo "Nessuna modifica da commettere"
 
-      - name: Push delle modifiche
+      - name: Push delle modifiche via SSH
         run: |
           git push git@github.com:apalladi/EU_bond_scraping.git
