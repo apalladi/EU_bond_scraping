@@ -16,7 +16,7 @@ jobs:
       - name: Impostare Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.x'
+          python-version: '3.x'  # Imposta la versione di Python se necessario
 
       - name: Installare dipendenze
         run: |
@@ -27,18 +27,21 @@ jobs:
         run: |
           python3 web_scraping.py  # Sostituisci con il comando per eseguire il tuo script
 
+      - name: Configurazione SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/github-actions-key
+          chmod 600 ~/.ssh/github-actions-key
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
       - name: Configura l'utente Git
         run: |
           git config --global user.name "apalladi"
           git config --global user.email "andrea.palladino@outlook.it"
 
-      - name: Esegui git pull (per sincronizzare con eventuali modifiche remote)
-        run: |
-          git pull origin main  # o il ramo su cui stai lavorando
-
       - name: Aggiungi le modifiche al commit
         run: |
-          git add results/bond_info_extracted.csv  # Aggiungi tutte le modifiche al commit
+          git add results/bond_info_extracted.csv  # Aggiunge tutte le modifiche al commit
 
       - name: Esegui il commit
         run: |
@@ -46,4 +49,4 @@ jobs:
 
       - name: Push delle modifiche
         run: |
-          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/apalladi/EU_bond_scraping.git
+          git push git@github.com:apalladi/EU_bond_scraping.git
