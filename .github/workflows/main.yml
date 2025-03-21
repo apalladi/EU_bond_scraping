@@ -1,4 +1,4 @@
-name: Esegui script ogni giorno lavorativo alle 16:15 ora locale 
+name: Esegui script ogni giorno lavorativo alle 16:15 ora locale
 
 on:
   schedule:
@@ -16,7 +16,7 @@ jobs:
       - name: Impostare Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.x'  # Imposta la versione di Python se necessario
+          python-version: '3.x'
 
       - name: Installare dipendenze
         run: |
@@ -32,9 +32,13 @@ jobs:
           git config --global user.name "apalladi"
           git config --global user.email "andrea.palladino@outlook.it"
 
+      - name: Esegui git pull (per sincronizzare con eventuali modifiche remote)
+        run: |
+          git pull origin main  # o il ramo su cui stai lavorando
+
       - name: Aggiungi le modifiche al commit
         run: |
-          git add results/bond_info_extracted.csv  # Aggiunge tutte le modifiche al commit
+          git add results/bond_info_extracted.csv  # Aggiungi tutte le modifiche al commit
 
       - name: Esegui il commit
         run: |
@@ -42,5 +46,4 @@ jobs:
 
       - name: Push delle modifiche
         run: |
-          git push https://x-access-token:${{ secrets.MY_GITHUB_TOKEN }}@github.com/apalladi/EU_bond_scraping.git
-
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/apalladi/EU_bond_scraping.git
