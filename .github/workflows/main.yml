@@ -1,0 +1,28 @@
+name: Esegui script ogni giorno lavorativo alle 15:40 ora locale (CEST)
+
+on:
+  schedule:
+    - cron: '40 13 * * 1-5'  # Ogni giorno lavorativo alle 13:40 UTC (che è 15:40 CEST)
+  workflow_dispatch:  # Permette di eseguire il workflow manualmente tramite l'interfaccia GitHub
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout codice
+        uses: actions/checkout@v2
+
+      - name: Impostare Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'  # Imposta la versione di Python se necessario
+
+      - name: Installare dipendenze
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt  # Installa le dipendenze dal file requirements.txt
+
+      - name: Esegui script
+        run: |
+          python3 path/to/your/script.py  # Sostituisci con il comando per eseguire il tuo script
