@@ -1,4 +1,5 @@
 import requests
+import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -313,6 +314,8 @@ if __name__ == "__main__":
     list_ISIN = np.array(data["ISIN Code"])
     list_ISIN = list_ISIN[0:100]
     print("Number of ISIN", len(list_ISIN))
-
+    
     df = extract_multiple_ISIN(list_ISIN)
+    
+    os.makedirs("results", exist_ok=True)
     df.to_csv("results/bond_info_extracted.csv")
