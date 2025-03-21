@@ -1,8 +1,8 @@
-name: Esegui script ogni giorno lavorativo alle 16:15 ora locale
+name: Esegui script ogni giorno lavorativo alle 18:00 ora locale
 
 on:
   schedule:
-    - cron: '15 15 * * 1-5'  # Ogni giorno lavorativo alle 15:15 UTC (16:15 ora italiana)
+    - cron: '0 17 * * 1-5'  # Ogni giorno lavorativo alle 17:00 UTC (18:00 ora italiana)
   workflow_dispatch:  # Permette esecuzione manuale
 
 jobs:
