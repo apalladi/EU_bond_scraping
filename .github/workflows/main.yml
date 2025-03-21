@@ -42,6 +42,5 @@ jobs:
 
       - name: Push delle modifiche
         run: |
-          git push origin main  # Esegui il push sul ramo principale (o il ramo su cui lavori)
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Usa il token di GitHub per l'autenticazione
+          git push https://x-access-token:${{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}}@github.com/apalladi/EU_bond_scraping.git
+
