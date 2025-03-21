@@ -42,5 +42,5 @@ jobs:
 
       - name: Push delle modifiche
         run: |
-          git push https://x-access-token:$${{ secrets.MY_GITHUB_TOKEN }}@github.com/apalladi/EU_bond_scraping.git
+          git push https://x-access-token:${{ secrets.MY_GITHUB_TOKEN }}@github.com/apalladi/EU_bond_scraping.git
 
