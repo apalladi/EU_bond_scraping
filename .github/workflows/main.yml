@@ -26,3 +26,22 @@ jobs:
       - name: Esegui script
         run: |
           python3 web_scraping.py  # Sostituisci con il comando per eseguire il tuo script
+
+      - name: Configura l'utente Git
+        run: |
+          git config --global user.name "apalladi"
+          git config --global user.email "andrea.palladino@outlook.it"
+
+      - name: Aggiungi le modifiche al commit
+        run: |
+          git add results/bond_info_extracted.csv  # Aggiunge tutte le modifiche al commit
+
+      - name: Esegui il commit
+        run: |
+          git commit -m "Aggiornamento automatico dopo esecuzione script" || echo "Nessuna modifica da commettere"
+
+      - name: Push delle modifiche
+        run: |
+          git push origin main  # Esegui il push sul ramo principale (o il ramo su cui lavori)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Usa il token di GitHub per l'autenticazione
