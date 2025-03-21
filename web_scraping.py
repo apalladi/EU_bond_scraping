@@ -312,7 +312,6 @@ if __name__ == "__main__":
     data = pd.read_csv(path, sep=";")
     data = data[data["Currency"] == "EUR"]
     list_ISIN = np.array(data["ISIN Code"])
-    list_ISIN = list_ISIN[0:10]
     print("Number of ISIN", len(list_ISIN))
     
     df = extract_multiple_ISIN(list_ISIN)
