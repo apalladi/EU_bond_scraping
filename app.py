@@ -53,6 +53,9 @@ with st.sidebar:
                            ["volume mensile mediano", "anni_scadenza", "Prezzo ufficiale"],
                            index=0)
 
+    # Aggiungi il credito nella sidebar prima della data
+    st.markdown("### Credit: Andrea Palladino")
+
 # Filtra automaticamente i dati ogni volta che l'utente modifica un filtro
 sub_df = filter_df(
     df_results,
@@ -73,3 +76,4 @@ st.dataframe(sub_df)
 st.sidebar.markdown(
     f"📅 Ultimo aggiornamento dati: **{pd.to_datetime('today').strftime('%d-%m-%Y')}**"
 )
+
