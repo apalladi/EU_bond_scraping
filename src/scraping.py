@@ -9,6 +9,7 @@ import concurrent.futures
 from datetime import datetime
 from tqdm import tqdm
 from bs4 import BeautifulSoup
+from src.analysis import compute_ratings_volume_new
 
 
 def extract_value_after_keyword(keyword, html_text):
