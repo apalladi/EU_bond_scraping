@@ -1,3 +1,6 @@
+import pandas as pd
+import numpy as np
+import os
 from src.scraping import extract_multiple_ISIN
 
 if __name__ == "__main__":
