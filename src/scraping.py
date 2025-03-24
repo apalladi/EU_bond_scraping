@@ -1,11 +1,24 @@
+# pylint: disable=C0301
+
+"""
+Modulo per il recupero e l'analisi dei dati di obbligazioni da Borsa Italiana.
+
+Contiene funzioni per estrarre valori numerici da pagine HTML, effettuare richieste HTTP per ottenere dati di volume,
+calcolare volumi medi mensili e altre statistiche, e creare DataFrame contenenti informazioni relative a obbligazioni
+basate su ISIN. Include anche la possibilità di estrarre dati per singoli ISIN o per una lista di ISIN.
+
+Funzioni principali:
+- `extract_value_after_keyword`: Estrae valori numerici da testo HTML dopo una parola chiave.
+- `fetch_data`: Esegue una richiesta HTTP POST per ottenere dati da Borsa Italiana.
+- `compute_avg_monthly_volume`: Calcola volumi medi mensili, minimi e massimi per un ISIN.
+- `extract_single_ISIN`: Estrae informazioni per un singolo ISIN da una pagina web di Borsa Italiana.
+- `extract_multiple_ISIN`: Estrae informazioni per più ISIN e le restituisce in un DataFrame ordinato.
+"""
+
+from datetime import datetime
 import requests
-import os
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import json
-import time
-from datetime import datetime
 from tqdm import tqdm
 from bs4 import BeautifulSoup
 from requests.exceptions import RequestException
@@ -46,16 +59,15 @@ def extract_value_after_keyword(keyword, html_text):
     return None
 
 
-def fetch_data(ISIN, cookies, headers, json_data):
+def fetch_data(cookies, headers, json_data):
     """
-    Effettua una richiesta HTTP POST al servizio di Borsa Italiana per ottenere i dati di volume in base all'ISIN specificato.
+    Effettua una richiesta HTTP POST al servizio di Borsa Italiana per ottenere i dati di volume.
 
     Parametri:
-    - ISIN (str): Il codice ISIN del titolo per il quale si vogliono ottenere i dati.
     - cookies (dict): Un dizionario contenente i cookie necessari per la richiesta HTTP.
     - headers (dict): Un dizionario contenente le intestazioni HTTP da includere nella richiesta.
-    - json_data (dict): Un dizionario contenente i dati JSON necessari per la richiesta, che includono 
-      parametri come il tipo di dati richiesti, l'ISIN, la lingua, ecc.
+    - json_data (dict): Un dizionario contenente i dati JSON necessari per la richiesta, che includono
+      parametri come il tipo di dati richiesti, la lingua, ecc.
 
     Restituisce:
     - dict: Un dizionario contenente i dati JSON ricevuti dalla risposta se la richiesta è riuscita,
@@ -88,7 +100,7 @@ def compute_avg_monthly_volume(ISIN, avg=True, verbose=False):
     """
     Calcola il volume mensile medio, minimo e massimo per un determinato ISIN, utilizzando i dati di Borsa Italiana.
 
-    La funzione invia una richiesta HTTP al servizio di Borsa Italiana per ottenere i dati di volume per l'ISIN specificato. 
+    La funzione invia una richiesta HTTP al servizio di Borsa Italiana per ottenere i dati di volume per l'ISIN specificato.
     In seguito, calcola i volumi mensili in base alle opzioni richieste: la mediana, il minimo e il massimo, oppure restituisce i singoli valori di volume.
 
     Parametri:
@@ -152,7 +164,7 @@ def compute_avg_monthly_volume(ISIN, avg=True, verbose=False):
     }
 
     # Recupera i dati
-    data_json = fetch_data(ISIN, cookies, headers, json_data)
+    data_json = fetch_data(cookies, headers, json_data)
 
     if not data_json:
         return None
@@ -166,16 +178,16 @@ def compute_avg_monthly_volume(ISIN, avg=True, verbose=False):
 
     # Calcola i volumi medi mensili
     if avg:
-        median_monthly_volume_million = round(data["volume"].median() / 10 ** 6, 2)
-        min_monthly_volume_million = round(data["volume"].min() / 10 ** 6, 2)
-        max_monthly_volume_million = round(data["volume"].max() / 10 ** 6, 2)
+        median_monthly_volume_million = round(data["volume"].median() / 10**6, 2)
+        min_monthly_volume_million = round(data["volume"].min() / 10**6, 2)
+        max_monthly_volume_million = round(data["volume"].max() / 10**6, 2)
         result = (
             median_monthly_volume_million,
             min_monthly_volume_million,
             max_monthly_volume_million,
         )
     else:
-        result = data["volume"] / 10 ** 6
+        result = data["volume"] / 10**6
 
     if verbose:
         print(result)
@@ -187,8 +199,8 @@ def extract_single_ISIN(ISIN, verbose=False):
     """
     Estrae informazioni relative a un'obbligazione da una pagina web di Borsa Italiana, utilizzando il codice ISIN.
 
-    La funzione effettua una richiesta HTTP GET alla pagina web specifica per l'ISIN fornito, estrae valori associati a determinate 
-    parole chiave (ad esempio, "Volume Ultimo", "Prezzo ufficiale", "Rendimento effettivo a scadenza netto"), 
+    La funzione effettua una richiesta HTTP GET alla pagina web specifica per l'ISIN fornito, estrae valori associati a determinate
+    parole chiave (ad esempio, "Volume Ultimo", "Prezzo ufficiale", "Rendimento effettivo a scadenza netto"),
     e calcola informazioni aggiuntive come la durata e il volume mensile medio di scambio. I risultati sono restituiti in un DataFrame.
 
     Parametri:
@@ -203,7 +215,7 @@ def extract_single_ISIN(ISIN, verbose=False):
     - Estrae i valori associati a parole chiave predefinite (come volume, rendimento, scadenza).
     - Calcola e aggiunge la durata residua dell'obbligazione (anni alla scadenza).
     - Calcola i volumi medi, minimi e massimi di scambio mensile degli ultimi 12 mesi per l'ISIN.
-    
+
     Eccezioni:
     - La funzione gestisce gli errori nella richiesta HTTP e stampa un messaggio se la pagina non viene recuperata correttamente.
     """
@@ -221,7 +233,7 @@ def extract_single_ISIN(ISIN, verbose=False):
     }
 
     # Effettua la richiesta HTTP
-    response = requests.get(url, headers=headers)
+    response = requests.get(url, headers=headers, timeout=20)
 
     # Controlla se la richiesta ha avuto successo
     if response.status_code == 200:
@@ -245,12 +257,11 @@ def extract_single_ISIN(ISIN, verbose=False):
         keywords_list = []
         values_list = []
 
-        for i, keyword in enumerate(keywords):
+        for _, keyword in enumerate(keywords):
             value = extract_value_after_keyword(keyword, html_text)
             if value:
                 # Rimuovi eventuali caratteri di separazione e formatta correttamente il numero
                 value = value.replace(".", "").replace(",", ".")
-                # value = float(value)
             else:
                 value = np.nan
             keywords_list.append(keyword)
