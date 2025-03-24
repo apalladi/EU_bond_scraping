@@ -29,7 +29,7 @@ with st.sidebar:
     prezzo_max = st.number_input("💰 Prezzo massimo", min_value=0, max_value=999, value=100)
 
     escludi_BTP = st.checkbox("Escludi BTP", value=True)
-    escludi_romania = st.checkbox("Escludi bond XS", value=True)
+    escludi_XS = st.checkbox("Escludi bond XS", value=True)
 
     sort_by = st.selectbox("📊 Ordina per:", 
                            ["volume mensile mediano (M)", "anni_scadenza", "Prezzo ufficiale", "rendimento lordo"],
@@ -47,7 +47,7 @@ sub_df = filter_df(
     ncontratti_min=0,
     sort_by=sort_by,
     escludi_BTP=escludi_BTP,
-    escludi_romania=escludi_romania
+    escludi_XS=escludi_XS
 )
 
 # Verifica che l'indice sia unico
