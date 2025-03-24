@@ -34,7 +34,7 @@ def compute_ratings_volume_new(df2):
     - I rating sono assegnati usando `np.digitize` che posiziona ciascun valore nel corrispondente intervallo di quantili. Il valore di `ratings` è incrementato di 1.
     """
 
-    df = df2.copy(deep=True)
+    df = df2.copy()
     df.fillna(0, inplace=True)
 
     df_null = df[df["median_monthly_volume_million"] == 0]
@@ -96,7 +96,7 @@ def filter_df(
     - Il DataFrame risultante è ordinato in base al campo `sort_by` in ordine decrescente.
     """
 
-    df = df2.copy(deep=True)
+    df = df2.copy()
     df.fillna(0, inplace=True)
 
     mask = (
@@ -109,20 +109,10 @@ def filter_df(
     sub_df = df.loc[mask, :]
 
     if escludi_BTP:
-        # select non italian bond
-        selected_index = []
-        for idx in sub_df.index:
-            if idx[0:2] != "IT":
-                selected_index.append(idx)
-        sub_df = sub_df.loc[selected_index, :]
+        sub_df = sub_df[~sub_df.index.str.startswith("IT")]
 
     if escludi_XS:
-        # select bond that do not start with XS
-        selected_index = []
-        for idx in sub_df.index:
-            if idx[0:2] != "XS":
-                selected_index.append(idx)
-        sub_df = sub_df.loc[selected_index, :]
+        sub_df = sub_df[~sub_df.index.str.startswith("XS")]
 
     sub_df.sort_values(sort_by, ascending=False, inplace=True)
 
