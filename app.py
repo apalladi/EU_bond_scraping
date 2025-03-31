@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from web_scraping import filter_df
+from src.analysis import filter_df, improve_data, color_by_rating
 
 # Layout migliorato
 st.set_page_config(page_title="Cerca Bond Europei", layout="wide")
@@ -12,43 +12,10 @@ CSV_URL = 'results/bond_info_extracted.csv'
 @st.cache_data
 def load_data():
     df = pd.read_csv(CSV_URL, index_col=0)
-
-    # remove duplicates, if any
-    df= df.loc[~df.index.duplicated(keep='first')]
-
-    # sistema il problema delle scadenze negative
-    df.loc[df['anni_scadenza'] < 0, 'anni_scadenza'] += 100
-    
-    new_columns_order = ['median_monthly_volume_million', 'ratings', 'Prezzo ufficiale',
-                         'Rendimento effettivo a scadenza lordo', 'anni_scadenza', 'Scadenza',
-                         'Numero Contratti', 'Volume Ultimo', 'Volume totale',
-                         'Rendimento effettivo a scadenza netto', 'Duration modificata',
-                         'min_monthly_volume_million', 'max_monthly_volume_million']
-    
-    df = df.loc[:, new_columns_order]
-    df = df.rename(columns={'median_monthly_volume_million': 'volume mensile mediano (M)',
-                            'ratings': 'percentili volume',
-                            'Rendimento effettivo a scadenza lordo': 'rendimento lordo',
-                            'Volume Ultimo': 'volume ultimo scambio',
-                            'Volume totale': 'Volume ultimo giorno',
-                            'min_monthly_volume_million': 'volume mensile minimo',
-                            'max_monthly_volume_million': 'Volume mensile massimo'})
-    
     return df
-
-# Funzione per colorare le celle in base al rating con trasparenza
-def color_by_rating(val):
-    if val >= 75:
-        color = 'background-color: rgba(0, 128, 0, 0.2)'  # verde chiaro con trasparenza
-    elif val >= 50:
-        color = 'background-color: rgba(255, 255, 0, 0.3)'  # giallo chiaro con trasparenza
-    elif val >= 25:
-        color = 'background-color: rgba(255, 165, 0, 0.3)'  # arancione chiaro con trasparenza
-    else:
-        color = 'background-color: rgba(255, 0, 0, 0.4)'  # rosso chiaro con trasparenza
-    return color
-
+    
 df_results = load_data()
+df_results = improve_data(df_results)
 
 # Sidebar per i filtri
 with st.sidebar:
@@ -62,7 +29,7 @@ with st.sidebar:
     prezzo_max = st.number_input("💰 Prezzo massimo", min_value=0, max_value=999, value=100)
 
     escludi_BTP = st.checkbox("Escludi BTP", value=True)
-    escludi_romania = st.checkbox("Escludi bond XS", value=True)
+    escludi_XS = st.checkbox("Escludi bond XS", value=True)
 
     sort_by = st.selectbox("📊 Ordina per:", 
                            ["volume mensile mediano (M)", "anni_scadenza", "Prezzo ufficiale", "rendimento lordo"],
@@ -80,7 +47,7 @@ sub_df = filter_df(
     ncontratti_min=0,
     sort_by=sort_by,
     escludi_BTP=escludi_BTP,
-    escludi_romania=escludi_romania
+    escludi_XS=escludi_XS
 )
 
 # Verifica che l'indice sia unico
