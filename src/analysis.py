@@ -158,6 +158,7 @@ def improve_data(df):
     new_columns_order = [
         "median_monthly_volume_million",
         "ratings",
+        "Tasso Cedola su base Annua",
         "Prezzo ufficiale",
         "Rendimento effettivo a scadenza lordo",
         "anni_scadenza",
@@ -181,6 +182,7 @@ def improve_data(df):
             "Volume totale": "Volume ultimo giorno",
             "min_monthly_volume_million": "volume mensile minimo",
             "max_monthly_volume_million": "Volume mensile massimo",
+            "Tasso Cedola su base Annua": "Cedola",
         }
     )
 

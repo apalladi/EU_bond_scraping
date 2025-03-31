@@ -252,6 +252,7 @@ def extract_single_ISIN(ISIN, verbose=False):
             "Rendimento effettivo a scadenza lordo",
             "Duration modificata",
             "Scadenza",
+            "Tasso Cedola su base Annua",
         ]
 
         keywords_list = []
