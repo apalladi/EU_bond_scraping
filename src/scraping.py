@@ -282,6 +282,7 @@ def extract_single_ISIN(ISIN, verbose=False):
 
     # aggiungi anni scadenza (diverso da modified duration)
     today = pd.Timestamp(datetime.today())
+    df["Scadenza"] = pd.to_datetime(df["Scadenza"], dayfirst=True)
     anni_scadenza = (pd.Timestamp(df["Scadenza"].iloc[0]) - today).days / 365
     df["anni_scadenza"] = round(anni_scadenza, 2)
 
