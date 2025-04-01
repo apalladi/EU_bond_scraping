@@ -285,6 +285,7 @@ def extract_single_ISIN(ISIN, verbose=False):
     df["Scadenza"] = pd.to_datetime(df["Scadenza"], dayfirst=True)
     anni_scadenza = (pd.Timestamp(df["Scadenza"].iloc[0]) - today).days / 365
     df["anni_scadenza"] = round(anni_scadenza, 2)
+    df["Scadenza"] = df["Scadenza"].dt.date
 
     # calcola mediana, min e max dei volumi di scambio mensili degli ultimi 12 mesi
     median_volume, min_volume, max_volume = compute_avg_monthly_volume(ISIN)
