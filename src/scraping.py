@@ -252,8 +252,7 @@ def extract_single_ISIN(ISIN, verbose=False):
             "Rendimento effettivo a scadenza lordo",
             "Duration modificata",
             "Scadenza",
-            "Periodicità Cedola",
-            "Tasso Cedola Periodale",
+            "Tasso Cedola su base Annua",
         ]
 
         keywords_list = []
@@ -280,18 +279,6 @@ def extract_single_ISIN(ISIN, verbose=False):
 
     # Crea la trasposizione del DataFrame
     df = df.transpose()  # Facciamo la trasposizione per avere ISIN come colonna
-
-    # aggiungi cedola
-    periodicità_cedola = df["Tasso Cedola Periodale"].iloc[0]
-    if periodicità_cedola == 'Trimestrale':
-        moltiplicatore = 4
-    elif periodicità_cedola == 'Semestrale':
-        moltiplicatore = 2
-    elif periodicità_cedola == 'Annuale':
-        moltiplicatore = 1
-    else:
-        moltiplicatore = np.nan
-    df["Tasso Cedola su base Annua"] = df["Tasso Cedola Periodale"]*moltiplicatore
 
     # aggiungi anni scadenza (diverso da modified duration)
     today = pd.Timestamp(datetime.today())
