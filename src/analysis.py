@@ -35,8 +35,9 @@ def compute_ratings_volume_new(df2):
     """
 
     df = df2.copy()
-    df["median_monthly_volume_million"] = df["median_monthly_volume_million"].fillna(0)
-    #df.fillna(0, inplace=True)
+    cols_to_fill = ["Numero Contratti", "Volume Ultimo", "Volume totale", 
+                    "median_monthly_volume_million", "min_monthly_volume_million", "max_monthly_volume_million"]
+    df[cols_to_fill] = df[cols_to_fill].fillna(0)
 
     df_null = df[df["median_monthly_volume_million"] == 0]
     df_null["ratings"] = 0
@@ -98,7 +99,6 @@ def filter_df(
     """
 
     df = df2.copy()
-    #df.fillna(0, inplace=True)
 
     mask = (
         (df["anni_scadenza"] <= anni_scadenza_max)
