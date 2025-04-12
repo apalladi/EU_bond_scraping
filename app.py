@@ -44,7 +44,6 @@ sub_df = filter_df(
     anni_scadenza_min=anni_scadenza_min,
     anni_scadenza_max=anni_scadenza_max,
     prezzo_max=prezzo_max,
-    ncontratti_min=0,
     sort_by=sort_by,
     escludi_BTP=escludi_BTP,
     escludi_XS=escludi_XS
