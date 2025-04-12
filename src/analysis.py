@@ -63,7 +63,6 @@ def filter_df(
     anni_scadenza_min,
     anni_scadenza_max,
     prezzo_max,
-    ncontratti_min,
     sort_by="Volume totale",
     escludi_BTP=False,
     escludi_XS=False,
@@ -81,7 +80,6 @@ def filter_df(
     - anni_scadenza_min (float): Il numero minimo di anni alla scadenza per includere l'obbligazione.
     - anni_scadenza_max (float): Il numero massimo di anni alla scadenza per includere l'obbligazione.
     - prezzo_max (float): Il prezzo massimo per includere l'obbligazione.
-    - ncontratti_min (int): Il numero minimo di contratti per includere l'obbligazione.
     - sort_by (str, opzionale): Il campo per ordinare il DataFrame. Il valore predefinito è "Volume totale".
     - escludi_BTP (bool, opzionale): Se True, esclude i bond italiani (BTP) (codice ISIN che inizia con "IT").
       Il valore predefinito è False.
@@ -100,14 +98,21 @@ def filter_df(
 
     df = df2.copy()
 
+    # aggiungo valore fittizio per non eliminarli col filtro sul prezzo
+    df["Prezzo ufficiale"].fillna(-0.00314, inplace=True)
+    df["anni_scadenza"].fillna(0.00314, inplace=True)
+
     mask = (
         (df["anni_scadenza"] <= anni_scadenza_max)
         & (df["anni_scadenza"] >= anni_scadenza_min)
         & (df["Prezzo ufficiale"] <= prezzo_max)
-        & (df["Numero Contratti"] >= ncontratti_min)
     )
 
     sub_df = df.loc[mask, :]
+
+    # ripristina missing values
+    sub_df[sub_df["Prezzo ufficiale"] == -0.00314] = np.nan
+    sub_df[sub_df["anni_scadenza"] == 0.00314] = np.nan
 
     if escludi_BTP:
         sub_df = sub_df[~sub_df.index.str.startswith("IT")]
