@@ -29,7 +29,7 @@ Puoi avviare lo scraping manualmente con:
 ```
 python web_scraping.py
 ```
-La lista degli ISIN viene scaricata dal seguente [sito](https://www.simpletoolsforinvestors.eu/data/listino/listino.csv](sito).
+La lista degli ISIN viene scaricata dal seguente [sito](https://www.simpletoolsforinvestors.eu/data/listino/listino.csv).
 
 Tuttavia, questa operazione non è necessaria. I risultati vengono aggiornati automaticamente ogni giorno tramite una GitHub Action e salvati nella cartella results.
 In alternativa, puoi utilizzare la interfaccia grafica costruita con **Streamlit** per esplorare i dati in modo più intuitivo.
