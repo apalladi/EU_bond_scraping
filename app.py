@@ -31,6 +31,8 @@ with st.sidebar:
     escludi_BTP = st.checkbox("Escludi BTP", value=True)
     escludi_XS = st.checkbox("Escludi bond XS", value=True)
 
+    isin_prefix = st.text_input("Filtra per prime lettere ISIN (es. IT, FR, ES, DE)", value="").strip().upper()
+
     sort_by = st.selectbox("📊 Ordina per:", 
                            ["volume mensile mediano (M)", "anni_scadenza", "Prezzo ufficiale", "rendimento lordo"],
                            index=0)
@@ -48,6 +50,10 @@ sub_df = filter_df(
     escludi_BTP=escludi_BTP,
     escludi_XS=escludi_XS
 )
+
+# Applica filtro ISIN se specificato
+if isin_prefix:
+    sub_df = sub_df[sub_df.index.str.startswith(isin_prefix)]
 
 # Verifica che l'indice sia unico
 if sub_df.index.duplicated().any():
