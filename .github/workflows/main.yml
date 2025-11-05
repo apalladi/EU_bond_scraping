@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Checkout codice
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Impostare SSH per GitHub
         run: |
@@ -21,7 +21,7 @@ jobs:
           ssh-keyscan github.com >> ~/.ssh/known_hosts
 
       - name: Impostare Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
