@@ -17,7 +17,7 @@ def load_data():
 df_results = load_data()
 df_results = improve_data(df_results)
 
-# Sidebar per i filtri
+# Sidebar per i filtri (prima parte)
 with st.sidebar:
     st.header("🔍 Filtri di ricerca")
     
@@ -28,22 +28,19 @@ with st.sidebar:
 
     prezzo_max = st.number_input(
         "💰 Prezzo massimo",
-        min_value=0, max_value=999, value=100
+        min_value=0, max_value=999,
+        value=100
     )
 
-    # ✅ Nuovo filtro: volume minimo (percentile)
+    # ✅ Default percentile volume = 75
     volume_min = st.slider(
         "📈 Percentile volume minimo",
-        min_value=0, max_value=100, value=75
+        min_value=0, max_value=100,
+        value=75
     )
 
     escludi_BTP = st.checkbox("Escludi BTP", value=True)
     escludi_XS = st.checkbox("Escludi bond XS", value=True)
-
-    isin_prefix = st.text_input(
-        "Filtra per prime lettere ISIN (es. IT, FR, ES, DE)",
-        value=""
-    ).strip().upper()
 
     sort_by = st.selectbox(
         "📊 Ordina per:", 
@@ -56,9 +53,10 @@ with st.sidebar:
         index=0
     )
 
-    st.markdown("### Credit: Andrea Palladino")
+# ---------------------------------------------------
+# ✅ Applica tutti i filtri tranne ISIN
+# ---------------------------------------------------
 
-# Filtra automaticamente i dati
 sub_df = filter_df(
     df_results,
     anni_scadenza_min=anni_scadenza_min,
@@ -69,29 +67,65 @@ sub_df = filter_df(
     escludi_XS=escludi_XS
 )
 
-# ✅ Filtro aggiuntivo: volume minimo
 sub_df = sub_df[sub_df['percentili volume'] >= volume_min]
 
-# Filtro ISIN se specificato
-if isin_prefix:
-    sub_df = sub_df[sub_df.index.str.startswith(isin_prefix)]
+# ---------------------------------------------------
+# ✅ Prefissi disponibili DOPO i filtri
+# ---------------------------------------------------
 
-# Verifica indice
+unique_prefixes = sorted({idx[:2] for idx in sub_df.index if isinstance(idx, str)})
+
+# ---------------------------------------------------
+# ✅ Sidebar: prefissi cliccabili in 4 colonne + RESET
+# ---------------------------------------------------
+
+with st.sidebar:
+
+    st.markdown("**Prefissi ISIN disponibili (clicca per filtrare):**")
+
+    # Recupera selezione precedente
+    selected_prefix = st.session_state.get("selected_prefix", None)
+
+    # ✅ 4 colonne per riga
+    cols = st.columns(4)
+    i = 0
+
+    for p in unique_prefixes:
+        if cols[i].button(p, key=f"prefix_{p}"):
+            st.session_state["selected_prefix"] = p
+            selected_prefix = p
+        i = (i + 1) % 4
+
+    # ✅ Bottone per resettare il filtro Paese
+    if st.button("Mostra tutti"):
+        st.session_state["selected_prefix"] = None
+        selected_prefix = None
+
+# ---------------------------------------------------
+# ✅ Applica filtro ISIN se selezionato
+# ---------------------------------------------------
+
+if selected_prefix:
+    sub_df = sub_df[sub_df.index.str.startswith(selected_prefix)]
+
+# Verifica duplicati
 if sub_df.index.duplicated().any():
     st.warning("L'indice contiene duplicati. Potrebbero esserci conflitti nella visualizzazione.")
 
-# Styling colonna percentili volume
+# Stile colonna percentili volume
 styled_df = sub_df.style.applymap(
     color_by_rating, subset=['percentili volume']
 )
 
-# Formatta le colonne float
+# Formattazione colonne float
 float_columns = df_results.select_dtypes(include=['float64']).columns
 styled_df = styled_df.format({col: "{:.2f}" for col in float_columns})
 
-# Mostra i risultati
+# Output
 st.write(f"### 📋 Risultati filtrati ({len(sub_df)} bond trovati)")
 st.write(styled_df)
+
+st.sidebar.markdown("### Credit: Andrea Palladino")
 
 # Badge aggiornamento dati
 st.sidebar.markdown(
