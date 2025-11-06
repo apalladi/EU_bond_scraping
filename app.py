@@ -26,21 +26,39 @@ with st.sidebar:
         min_value=0, max_value=100, value=(2, 7)
     )
 
-    prezzo_max = st.number_input("💰 Prezzo massimo", min_value=0, max_value=999, value=100)
+    prezzo_max = st.number_input(
+        "💰 Prezzo massimo",
+        min_value=0, max_value=999, value=100
+    )
+
+    # ✅ Nuovo filtro: volume minimo (percentile)
+    volume_min = st.slider(
+        "📈 Percentile volume minimo",
+        min_value=0, max_value=100, value=75
+    )
 
     escludi_BTP = st.checkbox("Escludi BTP", value=True)
     escludi_XS = st.checkbox("Escludi bond XS", value=True)
 
-    isin_prefix = st.text_input("Filtra per prime lettere ISIN (es. IT, FR, ES, DE)", value="").strip().upper()
+    isin_prefix = st.text_input(
+        "Filtra per prime lettere ISIN (es. IT, FR, ES, DE)",
+        value=""
+    ).strip().upper()
 
-    sort_by = st.selectbox("📊 Ordina per:", 
-                           ["volume mensile mediano (M)", "anni_scadenza", "Prezzo ufficiale", "rendimento lordo"],
-                           index=0)
+    sort_by = st.selectbox(
+        "📊 Ordina per:", 
+        [
+            "volume mensile mediano (M)",
+            "anni_scadenza",
+            "Prezzo ufficiale",
+            "rendimento lordo"
+        ],
+        index=0
+    )
 
-    # Aggiungi il credito nella sidebar prima della data
     st.markdown("### Credit: Andrea Palladino")
 
-# Filtra automaticamente i dati ogni volta che l'utente modifica un filtro
+# Filtra automaticamente i dati
 sub_df = filter_df(
     df_results,
     anni_scadenza_min=anni_scadenza_min,
@@ -51,29 +69,31 @@ sub_df = filter_df(
     escludi_XS=escludi_XS
 )
 
-# Applica filtro ISIN se specificato
+# ✅ Filtro aggiuntivo: volume minimo
+sub_df = sub_df[sub_df['percentili volume'] >= volume_min]
+
+# Filtro ISIN se specificato
 if isin_prefix:
     sub_df = sub_df[sub_df.index.str.startswith(isin_prefix)]
 
-# Verifica che l'indice sia unico
+# Verifica indice
 if sub_df.index.duplicated().any():
     st.warning("L'indice contiene duplicati. Potrebbero esserci conflitti nella visualizzazione.")
 
-# Applica il colore alla colonna 'percentili volume' per lo styling
-styled_df = sub_df.style.applymap(color_by_rating, subset=['percentili volume'])
+# Styling colonna percentili volume
+styled_df = sub_df.style.applymap(
+    color_by_rating, subset=['percentili volume']
+)
 
-# Selezionare solo le colonne con valori numerici float
+# Formatta le colonne float
 float_columns = df_results.select_dtypes(include=['float64']).columns
-# Applicare il formato a due decimali solo alle colonne float
 styled_df = styled_df.format({col: "{:.2f}" for col in float_columns})
 
-# Mostra i risultati con il DataFrame stilizzato
+# Mostra i risultati
 st.write(f"### 📋 Risultati filtrati ({len(sub_df)} bond trovati)")
-
-# Usa `st.write()` per visualizzare il DataFrame stilizzato
 st.write(styled_df)
 
-# Badge con data ultimo aggiornamento
+# Badge aggiornamento dati
 st.sidebar.markdown(
     f"📅 Ultimo aggiornamento dati: **{pd.to_datetime('today').strftime('%d-%m-%Y')}**"
 )
